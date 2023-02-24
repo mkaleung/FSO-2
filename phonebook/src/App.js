@@ -9,6 +9,18 @@ const Person = ({ person }) => {
   )
 }
 
+const ContactList = ({})
+
+const Input = ({ name, value, onChange }) => {
+  return (
+    <div>
+      {name}: <input name={name} value={value} onChange={onChange} />
+    </div>
+  )
+}
+
+const PersonForm= ({})
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -38,16 +50,23 @@ const App = () => {
     setNewNumber('')
   }
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleFilterChange = (event) => {
-    setFilterName(event.target.value)
+  const handleChange = (event) => {
+    const inputName = event.target.name
+    const newValue = event.target.value
+    console.log(inputName)
+    switch (inputName) {
+      case "name":
+        setNewName(newValue)
+        break
+      case "number":
+        setNewNumber(newValue)
+        break
+      case "filter":
+        setFilterName(newValue)
+        break
+      default:
+        alert("ERROR IN INPUT")
+    }
   }
 
   const contactsToShow = (filterName) => {
@@ -63,17 +82,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter: <input value={filterName} onChange={handleFilterChange} />
-      </div>
+      <Input name="filter" value={filterName} onChange={handleChange} />
       <h2>Add New Contact</h2>
+      {/* <PersonForm  */}
       <form onSubmit={addPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
+        <Input name="name" value={newName} onChange={handleChange} />
+        <Input name="number" value={newNumber} onChange={handleChange} />
         <div>
           <button type="submit">add</button>
         </div>
