@@ -27,7 +27,7 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length +  1,
+      id: persons.length === 0 ? 1 : persons[persons.length-1].id +  1,
     }
     
     phonebookService
@@ -38,6 +38,23 @@ const App = () => {
         setNewNumber('')
       })
   }
+
+  const deletePerson = (id) => {  
+    let person = persons.find(person => person.id === id).name
+    
+    if (window.confirm(`Delete ${person}?`)) {
+      phonebookService
+      .removePerson(id)
+      .then(response => { 
+        setPersons(persons.filter(p => p.id !== id))
+      })
+      .catch(error => {
+        alert(`the person '${person} was already deleted from the server`)
+        setPersons(persons.filter(p => p.id !== id))
+      })
+    }
+  }
+
 
   const handleChange = (event) => {
     const inputName = event.target.name
@@ -89,6 +106,7 @@ const App = () => {
           <Person 
             key={person.name}
             person={person}
+            deletePerson={() => deletePerson(person.id)}
           />
         )}
       </ul>
