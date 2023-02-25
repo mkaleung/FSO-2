@@ -20,10 +20,27 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    if (persons.find(person => person.name === newName)) {
-      return alert(`${newName} is already added to the phonebook`)
-    }
+    const personExists = persons.find(person => person.name === newName)
 
+    if (personExists && personExists.number !== newNumber) {
+      if (window.confirm(`${personExists.name} is already added to the phonebook. Do you want to replace the old number with the new one?`)) {
+        const updatedNumberObject = {
+          ...personExists, 
+          number: newNumber
+        }
+          
+        return phonebookService
+          .update(personExists.id, updatedNumberObject)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== personExists.id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+    } else if (personExists) {
+        return alert(`${newName} is already added to the phonebook`)
+      }
+  
     const personObject = {
       name: newName,
       number: newNumber,
@@ -55,11 +72,10 @@ const App = () => {
     }
   }
 
-
   const handleChange = (event) => {
     const inputName = event.target.name
     const newValue = event.target.value
-    console.log(inputName)
+
     switch (inputName) {
       case "name":
         setNewName(newValue)
