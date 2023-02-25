@@ -3,12 +3,14 @@ import PersonForm from './components/PersonForm'
 import Input from './components/Input'
 import Person from './components/Person'
 import phonebookService from './services/phonebook'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [message, setMessage] = useState([null, 'initial className'])
 
   useEffect(() => {
     phonebookService
@@ -32,6 +34,10 @@ const App = () => {
         return phonebookService
           .update(personExists.id, updatedNumberObject)
           .then(returnedPerson => {
+            setMessage([`Updated Number for ${newName}`, 'positive'])
+            setTimeout(() => {
+              setMessage([null, null])
+            }, 5000)
             setPersons(persons.map(person => person.id !== personExists.id ? person : returnedPerson))
             setNewName('')
             setNewNumber('')
@@ -50,6 +56,10 @@ const App = () => {
     phonebookService
       .create(personObject)
       .then(returnedPerson => {
+        setMessage([`Added ${newName}`, 'positive'])
+        setTimeout(() => {
+          setMessage([null, null])
+        }, 5000)
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
@@ -66,7 +76,10 @@ const App = () => {
         setPersons(persons.filter(p => p.id !== id))
       })
       .catch(error => {
-        alert(`the person '${person} was already deleted from the server`)
+        setMessage([`The person ${person} was already deleted from the server`, 'negative'])
+        setTimeout(() => {
+          setMessage([null, null])
+        }, 5000)        
         setPersons(persons.filter(p => p.id !== id))
       })
     }
@@ -104,6 +117,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message[0]} className={message[1]} />
       <Input 
         name="filter"
         value={filterName}
