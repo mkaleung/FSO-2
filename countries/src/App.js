@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react'
 import searchService from './services/search'
 
-const ResultList = ({searchResult}) => {
+const CountryList = ({ country, handleSubmit }) => {
+  return (
+    <li key={country}>
+      {country}
+      <button name={country} onClick={(event) => handleSubmit(event)}>show</button>
+    </li>
+      
+  )
+}
+
+
+const ResultList = ({ searchResult, handleSubmit }) => {
   if (searchResult === null) {
     return (
       <div>
@@ -23,7 +34,7 @@ const ResultList = ({searchResult}) => {
         <p>Capital: {country.capital}</p>
         <p>Area: {country.area}</p>
         <h2>Languages</h2>
-        {Object.values(country.languages).map(each => <li key={each}>{each}</li>)}
+        {Object.values(country.languages).map(language => <li key={language}>{language}</li>)}
         <br />
           <img src={country.flags.png} alt={country.flags.alt} />        
       </div>
@@ -32,8 +43,8 @@ const ResultList = ({searchResult}) => {
     return (
       <ul>
         {searchResult.map(result => 
-          <li key={result.name.common}>{result.name.common}</li>
-          )}
+          <CountryList country={result.name.common} handleSubmit={handleSubmit} />
+        )}
       </ul>
     )
   }
@@ -46,13 +57,17 @@ function App() {
       setSearch(event.target.value)
   }
 
+  const handleSubmit = (event) => {
+    const country = event.target.name
+    setSearch(country)
+  }
+
   useEffect(() => {
     if (search) {
       searchService
       .getCountries(search)
       .then(results => {
         setSearchResult(results)
-        console.log(results.length)
       })
       .catch(error => {
         setSearchResult(null)
@@ -64,7 +79,7 @@ function App() {
     <div>
       find countries 
       <input value={search} onChange={handleChange}></input>
-      <ResultList searchResult={searchResult} />
+      <ResultList searchResult={searchResult} handleSubmit={handleSubmit} />
     </div>
   );
 }
